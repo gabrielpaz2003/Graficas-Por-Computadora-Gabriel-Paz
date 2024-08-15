@@ -1,2 +1,2 @@
-# GPC-Lab1
-Filling any Polygon
+# Repositorio Graficas por Computadora
+
