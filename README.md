@@ -57,7 +57,7 @@ Cada carpeta contiene su propio archivo `README.md` que detalla cómo ejecutar e
 
 Si tienes alguna duda o comentario sobre este repositorio, no dudes en ponerte en contacto conmigo a través de mis canales oficiales.
 
-Correo electrónico: **paz221087@uvg.edu.gt**
+Correo electrónico: **paz221087@uvg.edu.gt**  
 Discord: **gabrielpaz___**
 
 ## Licencia
