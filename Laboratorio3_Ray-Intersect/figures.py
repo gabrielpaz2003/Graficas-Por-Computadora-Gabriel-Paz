@@ -205,6 +205,7 @@ class AABB(Shape):
                          rayDirection=dir,
                          obj=self)
 
+
 class Ellipsoid(Shape):
     def __init__(self, position, radii, material):
         super().__init__(position, material)
@@ -220,11 +221,11 @@ class Ellipsoid(Shape):
         L = resta(self.scale_point(self.position, inverse=True), scaled_origin)
         tca = dotProduct(L, scaled_dir)
         d2 = dotProduct(L, L) - tca ** 2
-        
+
         # Si la distancia es mayor que 1, no hay intersección (en el espacio de la esfera)
         if d2 > 1:
             return None
-        
+
         thc = (1 - d2) ** 0.5
         t0 = tca - thc
         t1 = tca + thc
@@ -237,13 +238,14 @@ class Ellipsoid(Shape):
 
         # Calcular el punto de intersección en el espacio escalado
         P_scaled = suma(scaled_origin, producto(t0, scaled_dir))
-        
+
         # Transformar el punto de intersección de vuelta al espacio del elipsoide original
         P = self.scale_point(P_scaled, inverse=False)
-        
+
         # Calcular la normal en el punto de intersección
         normal = resta(P, self.position)
-        normal = self.scale_direction(normal, inverse=True)  # Transformar normal al espacio de la esfera
+        # Transformar normal al espacio de la esfera
+        normal = self.scale_direction(normal, inverse=True)
         normal = normalize(normal)  # Normalizar
 
         # Calcular coordenadas de textura (usando una proyección esférica simple)
@@ -274,4 +276,82 @@ class Ellipsoid(Shape):
         else:
             # Transformar al espacio del elipsoide
             return normalize([direction[0] * self.radii[0], direction[1] * self.radii[1], direction[2] * self.radii[2]])
+
+
+class Cylinder(Shape):
+    def __init__(self, position, radius, height, material):
+        super().__init__(position, material)
+        self.radius = radius
+        self.height = height
+        self.type = "Cylinder"
+
+    def ray_intersect_body(self, orig, dir):
+        dx, dz = dir[0], dir[2]
+        ox, oz = orig[0] - self.position[0], orig[2] - self.position[2]
+
+        # Resolver intersección con un cilindro en xz (ignorar y por ahora)
+        a = dx * dx + dz * dz
+        b = 2 * (ox * dx + oz * dz)
+        c = ox * ox + oz * oz - self.radius ** 2
+
+        discriminant = b * b - 4 * a * c
+        if discriminant < 0:
+            return None  # No hay intersección con el cuerpo del cilindro
+
+        sqrt_disc = (discriminant)**(0.5)
+        t0 = (-b - sqrt_disc) / (2 * a)
+        t1 = (-b + sqrt_disc) / (2 * a)
+
+        if t0 < 0:
+            t0 = t1
+        if t0 < 0:
+            return None
+
+        # Calcular el punto de intersección
+        P = suma(orig, producto(t0, dir))
+
+        # Verificar si el punto está dentro de la altura del cilindro
+        if self.position[1] <= P[1] <= (self.position[1] + self.height):
+            normal = [P[0] - self.position[0], 0, P[2] - self.position[2]]
+            normal = normalize(normal)
+
+            # Calcular las coordenadas de textura
+            u = (atan2(normal[2], normal[0])) / (2 * pi) + 0.5
+            v = (P[1] - self.position[1]) / self.height
+
+            return Intercept(
+                point=P,
+                normal=normal,
+                distance=t0,
+                texCoords=[u, v],
+                obj=self,
+                rayDirection=dir
+            )
+
+        # Si no está dentro de la altura, no hay intersección con el cuerpo
+        return None
+
+    def ray_intersect_caps(self, orig, dir):
+        # Verificar intersección con la tapa inferior
+        base_cap = Disk(self.position, [0, 1, 0], self.radius, self.material)
+        bottom_intercept = base_cap.ray_intersect(orig, dir)
+
+        # Verificar intersección con la tapa superior
+        top_cap_position = [self.position[0], self.position[1] + self.height, self.position[2]]
+        top_cap = Disk(top_cap_position, [0, 1, 0], self.radius, self.material)
+        top_intercept = top_cap.ray_intersect(orig, dir)
+
+        # Retornar la intersección más cercana
+        if bottom_intercept and top_intercept:
+            return bottom_intercept if bottom_intercept.distance < top_intercept.distance else top_intercept
+        return bottom_intercept or top_intercept
+
+    def ray_intersect(self, orig, dir):
+        body_intercept = self.ray_intersect_body(orig, dir)
+        caps_intercept = self.ray_intersect_caps(orig, dir)
+
+        # Retornar la intersección más cercana entre el cuerpo y las tapas
+        if body_intercept and caps_intercept:
+            return body_intercept if body_intercept.distance < caps_intercept.distance else caps_intercept
+        return body_intercept or caps_intercept
 

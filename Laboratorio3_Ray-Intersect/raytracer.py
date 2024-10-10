@@ -7,20 +7,20 @@
 import pygame
 from pygame.locals import *
 from gl import RendererRT
-from figures import Sphere, Plane, Disk, Ellipsoid
+from figures import Sphere, Plane, Disk, Ellipsoid, Cylinder
 from material import *
 from texture import Texture
 from lights import AmbientLight, DirectionalLight, PointLight, SpotLight
 
-width = 150
-height = 150
+width = 720
+height = 640
 
 screen = pygame.display.set_mode((width, height), pygame.SCALED)
 clock = pygame.time.Clock()
 
 rt = RendererRT(screen)
 
-rt.envMap = Texture("pared.bmp")
+rt.envMap = Texture("fondo.bmp")
 
 piedra = Material(diffuse=[0.5, 0.5, 0.5], spec=5, Ks=0.0, matType=OPAQUE)
 ladrillo = Material(diffuse=[0.6, 0.1, 0.1], spec=15, Ks=0.0, matType=OPAQUE)
@@ -43,26 +43,44 @@ rt.lights.append(
     SpotLight(position=[-1, 5.5, -7.5], direction=[0, -1, 0], intensity=10))
 
 
-rt.scene.append(Plane(position=[
-                0, -2.75, -7.5], normal=[0, 1, 0], material=piedra, texture_scale=(0.5, 0.5)))
-
-rt.scene.append(Plane(position=[
-                0, 6, -7.5], normal=[0, -1, 0], material=piedra, texture_scale=(0.2, 0.2)))
-
-rt.scene.append(Plane(position=[
-                0, -2.75, -15], normal=[0, 0, 1], material=piedra, texture_scale=(0.2, 0.2)))
-
-rt.scene.append(Plane(position=[-5, -2.75, -15], normal=[1,
-                0, 0], material=piedra, texture_scale=(0.2, 0.2)))
-
-rt.scene.append(Plane(position=[
-                5, -2.75, -15], normal=[-1, 0, 0], material=piedra, texture_scale=(0.2, 0.2)))
-
 rt.scene.append(Ellipsoid(
-    position=[0, 0, -10],
+    position=[-5, -3, -10],
     radii=[1, 3, 2],
     material=cobre
 ))
+rt.scene.append(Ellipsoid(
+    position=[5, -3, -10],
+    radii=[1, 3, 2],
+    material=ladrillo
+))
+rt.scene.append(Ellipsoid(
+    position=[0, -3, -10],
+    radii=[1, 3, 2],
+    material=agua
+))
+
+rt.scene.append(Cylinder(
+    position=[-5, 3, -10],
+    material=piedra,
+    radius=1,
+    height=3
+))
+
+rt.scene.append(Cylinder(
+    position=[0, 3, -10],
+    material=vidrio,
+    radius=1,
+    height=3
+))
+
+rt.scene.append(Cylinder(
+    position=[5, 3, -10],
+    material=plata,
+    radius=1,
+    height=3
+))
+
+
 
 rt.glRender()
 

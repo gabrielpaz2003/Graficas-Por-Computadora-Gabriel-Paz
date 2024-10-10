@@ -105,14 +105,12 @@ class RendererRT(object):
     def glGenerateFrameBuffer(self, filename):
 
         with open(filename, "wb") as file:
-            # Header
             file.write(char("B"))
             file.write(char("M"))
             file.write(dword(14 + 40 + (self.width * self.height * 3)))
             file.write(dword(0))
             file.write(dword(14 + 40))
 
-            # Info Header
             file.write(dword(40))
             file.write(dword(self.width))
             file.write(dword(self.height))
@@ -125,7 +123,6 @@ class RendererRT(object):
             file.write(dword(0))
             file.write(dword(0))
 
-            # Color table
             for y in range(self.height):
                 for x in range(self.width):
                     color = self.frameBuffer[x][y]
@@ -134,7 +131,6 @@ class RendererRT(object):
                                    color[0]])
 
                     file.write(color)
-
 
     def glCastRay(self, orig, direction, sceneObj=None, recursion=0):
 
@@ -189,4 +185,3 @@ class RendererRT(object):
 
                 self.glPoint(x, y, color)
                 pygame.display.flip()
-
