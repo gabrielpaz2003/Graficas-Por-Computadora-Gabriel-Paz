@@ -5,8 +5,8 @@ from buffer import Buffer
 from shaders import *
 from model import Model
 
-width = 960
-height = 540
+width = 600
+height = 600
 
 pygame.init()
 
@@ -15,14 +15,18 @@ screen = pygame.display.set_mode(
 
 clock = pygame.time.Clock()
 
-renderer = Renderer(screen=screen)
+renderer = Renderer(screen)
 
-renderer.SetShaders(vShader=vertex_shader, fShader=fragmet_shader)
+vshader = vertex_shader
+fshader = fragment_shader
 
-faceModel = Model('face.obj')
-faceModel.AddTextures('model.bmp')
-renderer.scene.append(faceModel)
-faceModel.rotation.y = 180
+renderer.SetShaders(vshader, fshader)
+
+madeModel = Model('models/razenade.obj')
+madeModel.AddTextures('textures/razenade.bmp')
+renderer.scene.append(madeModel)
+madeModel.rotation.y = 180
+madeModel.scale = (8, 8, 8)
 isRunning = True
 
 while isRunning:
@@ -38,11 +42,35 @@ while isRunning:
                 renderer.FillMode()
             elif event.key == pygame.K_2:
                 renderer.WireFrameMode()
-
+            elif event.key == pygame.K_3:
+                vshader = vertex_shader
+                renderer.SetShaders(vshader, fshader)
+            elif event.key == pygame.K_4:
+                fshader = fragment_shader
+                renderer.SetShaders(vshader, fshader)
+            elif event.key == pygame.K_5:
+                fshader = scrolling_texture_shader
+                renderer.SetShaders(vshader, fshader)
+            elif event.key == pygame.K_6:
+                fshader = color_inversion_shader
+                renderer.SetShaders(vshader, fshader)
+            elif event.key == pygame.K_7:
+                fshader = grayscale_shader
+                renderer.SetShaders(vshader, fshader)
+            elif event.key == pygame.K_8:
+                vshader = explode_shader
+                renderer.SetShaders(vshader, fshader)
+            elif event.key == pygame.K_9:
+                vshader = wobble_shader
+                renderer.SetShaders(vshader, fshader) 
+            elif event.key == pygame.K_0:
+                vshader = rotation_shader
+                renderer.SetShaders(vshader, fshader) 
     if keys[K_LEFT]:
-        faceModel.rotation.y -= 10*deltaTime
+        nadeModel.rotation.y -= 45 * deltaTime
+
     elif keys[K_RIGHT]:
-        faceModel.rotation.y += 10*deltaTime
+        nadeModel.rotation.y += 45 * deltaTime
 
     renderer.time += deltaTime
     renderer.Render()
