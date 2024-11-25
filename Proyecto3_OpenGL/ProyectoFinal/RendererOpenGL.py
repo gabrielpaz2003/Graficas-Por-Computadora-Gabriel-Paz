@@ -42,48 +42,49 @@ renderer.SetShaders(vshader, fshader)
 
 model_index = 0
 
-# shipModel = Model(models[0])
-# shipModel.AddTextures(textures[0])
-# renderer.scene.append(shipModel)
-# shipModel.rotation.x = 0
-# shipModel.rotation.y = 90
-# shipModel.rotation.z = 0
-# shipModel.scale = (2, 2, 2)
-# shipModel.translation.x = -15
-# shipModel.translation.z = -3
-#
-# carModel = Model(models[1])
-# carModel.AddTextures(textures[1])
-# renderer.scene.append(carModel)
-# carModel.rotation.x = 0
-# carModel.rotation.y = 180
-# carModel.rotation.z = 0
-# carModel.scale = (2, 2, 2)
-# carModel.translation.x = 20
-# carModel.translation.y = -10
-# carModel.translation.z = -30
+duck = Model('models/duck.obj')
+duck.AddTextures('textures/duck.bmp')
+renderer.scene.append(duck)
+duck.rotation.x = 90
+duck.rotation.y = 180
+duck.rotation.z = -90
+duck.scale = (0.1, 0.1, 0.2)
+duck.translation.x = 10
+duck.translation.y = -19
+duck.translation.z = -15
 
-squareModel = Model('models/road.obj')
-squareModel.AddTextures('textures/road.bmp')
-renderer.scene.append(squareModel)
-squareModel.rotation.x = 0
-squareModel.rotation.y = 90
-squareModel.rotation.z = 0
-squareModel.scale = (7, 7, 7)
-squareModel.translation.x = 0
-squareModel.translation.y = -20
-squareModel.translation.z = -6
+gato = Model('models/cat.obj')
+gato.AddTextures('textures/cat.bmp')
+renderer.scene.append(gato)
+gato.rotation.x = 90
+gato.rotation.y = 180
+gato.rotation.z = -90
+gato.scale = (0.1, 0.1, 0.1)
+gato.translation.x = 20
+gato.translation.y = -19
+gato.translation.z = -5
 
-motoModel = Model('models/wolf.obj')
-motoModel.AddTextures('textures/wolf.bmp')
-renderer.scene.append(motoModel)
-motoModel.rotation.x = 0
-motoModel.rotation.y = 90
-motoModel.rotation.z = 0
-motoModel.scale = (15, 15, 15)
-motoModel.translation.x = -10
-motoModel.translation.y = -18
-motoModel.translation.z = -3
+road = Model('models/road.obj')
+road.AddTextures('textures/road.bmp')
+renderer.scene.append(road)
+road.rotation.x = 0
+road.rotation.y = 90
+road.rotation.z = 0
+road.scale = (7, 7, 7)
+road.translation.x = 0
+road.translation.y = -20
+road.translation.z = -6
+
+lobo = Model('models/wolf.obj')
+lobo.AddTextures('textures/wolf.bmp')
+renderer.scene.append(lobo)
+lobo.rotation.x = 0
+lobo.rotation.y = 90
+lobo.rotation.z = 0
+lobo.scale = (15, 15, 15)
+lobo.translation.x = -15
+lobo.translation.y = -18
+lobo.translation.z = -3
 isRunning = True
 
 y_limit = 3.0
@@ -92,6 +93,9 @@ y_limit = 3.0
 def update_lookat_target():
     current_model = renderer.scene[model_index]
     renderer.camera.LookAt(current_model.translation)
+
+music = pygame.mixer.music.load('musica.mp3')
+pygame.mixer.music.play(-1)
 
 
 while isRunning:
@@ -135,6 +139,9 @@ while isRunning:
             if event.button == 1:
                 isDragging = True
                 lastMouseX, lastMouseY = event.pos
+            elif event.button == 3:
+                model_index = (model_index + 1) % len(renderer.scene)
+                update_lookat_target()
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
                 isDragging = False
